@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+	xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:aop="http://www.springframework.org/schema/aop"
+	xmlns:tx="http://www.springframework.org/schema/tx"
+	xmlns:p="http://www.springframework.org/schema/p"
+	xsi:schemaLocation="
+        http://www.springframework.org/schema/beans 
+        http://www.springframework.org/schema/beans/spring-beans.xsd
+        http://www.springframework.org/schema/aop 
+        http://www.springframework.org/schema/aop/spring-aop.xsd
+        http://www.springframework.org/schema/context 
+        http://www.springframework.org/schema/context/spring-context.xsd
+        http://www.springframework.org/schema/tx
+        http://www.springframework.org/schema/tx/spring-tx.xsd
+        ">
+	
+	<!-- 1、加载连接数据库配置文件 -->
+	<context:property-placeholder location="classpath:db.properties"/>
+	
+	<!-- 2、配置数据库连接池 -->
+	<bean id="dataSource" class="com.mchange.v2.c3p0.ComboPooledDataSource">
+		<!-- 连接的基本信息 -->
+		<!-- 连接驱动 -->
+		<property name="driverClass" value="${jdbc.driverClass}"/>
+		<!-- 连接URL -->
+		<property name="jdbcUrl" value="${jdbc.jdbcUrl}"/>
+		<!-- 连接用户名 -->
+		<property name="user" value="${jdbc.user}"/>
+		<!-- 连接密码 -->
+		<property name="password" value="${jdbc.password}"/>
+		<!-- 连接的其它调优信息 -->
+		
+	</bean>
+	
+	<!-- 3、配置模板 -->
+	<bean id="jdbcTemplate" class="org.springframework.jdbc.core.JdbcTemplate">
+		<property name="dataSource" ref="dataSource"/>
+	</bean>
+	
+	<!-- 4、扫描注解类 DAO SERVICE-->
+	<context:component-scan base-package="com.zd.spring"/>	
+	
+	<!-- 5、完成注解方式的声明式事务 -->
+	<!-- a 事务管理器 -->
+	<bean id="transactionManager" class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
+		<property name="dataSource" ref="dataSource"/>
+	</bean>
+	
+	<!-- b 使用注解方式的注解驱动 -->
+	<tx:annotation-driven transaction-manager="transactionManager"/>
+	
+
+</beans>
